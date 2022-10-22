@@ -1,0 +1,431 @@
+2. Assignment 
+
+Hi GaneshRaj, you did well but few suggestions for you.
+1. Please do proper pre-processing on "project_grade_category" categorical features.
+2. In "project_grade_category" you have only four categories["Grades_PreK_2", "Grades_3_5", "Grades_6_8", "Grades_9_12"],
+ but while generating vector you are considering five categories. Please check it.Please keep it in mind above suggestions 
+and move forward to next assignment.
+
+3. Assignment
+
+You did well but one suggestion for you:
+
+1. When you are generating top 2000 features by using SelectKbest(), at that time you have to apply fit() on train data, 
+and transform() on train, cross validation, and test data.
+
+Please keep it in mind and move forward to next assignment.
+
+4. Assignment
+
+AppliedRoots
+2 yrs ago
+1. There is data leakage in this piece of code: "vectorizer = CountVectorizer(vocabulary=list(sorted_sub_cat_dict.keys()), lowercase=False, binary=True)" because you are showing complete vocabulary to the vectorizer. Instead just either remove this dict and fit_transform on train columns and transform on test/cv columns or create a new dict using only training samples.
+
+
+
+2. For essay/tile (text) features, do not limit the features just to a 1000. Atleast use ngram_range(1,2), max_features = 5000, min_df = 5
+
+
+
+3. For normalizing numerical data, please use reshape(1,-1) instead of (-1,1). Here is the working of normalizer and why you should use shape(1,-1) instead of (-1,1). Normalizer by default normalizes on each sample(row).StandardScaler standardises on each feature(column).
+ Here if you use (-1,1) it means any number of rows and one column.
+ So that makes normalizer on each row containing one column.This makes the value 1.
+
+ Ex:
+ After (-1,1) array is [[1],[2],[3]]
+ Using normalizer results in
+ [[1/1],[2/2],[3/3]] = [[1],[1],[1]]
+ If you use (1,-1) array is [1,2,3]
+ result is
+ [1/sqrt(14) , 2/sqrt(14) , 3/sqrt(14) ] = [0.26,0.52, 0.78]
+
+ Hope you get it.
+
+ Please read documentation for further clarity. Now reshape your arrays accordingly and use them. Print your numerical features before using them in your models. You can see that all your prices are 1 if you use (-1,1) right. Is it even useful if you use this in a model?If the shape mismatch is the problem for not using (1,-1) you can reshape into (-1,1) again after normalization is done.
+
+
+
+4. Please don't manually sample the data, rather using class_prior = [0.5,0.5] to deal with imbalance in N.B is enough.
+
+
+
+5. Use np.log10() for x axis instead of math.log()
+
+
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+1)Could you please rephrase the first point.I assume this is regarding choosing the best features??
+
+2)Done
+
+3)I have reshaped the array post normalization.Done.
+
+4)There is no need of upsampling is what ia assume in Naive Bayes.Kindly confirm.
+
+5)Done.
+
+A
+AppliedRoots
+2 yrs ago
+1. The sorted dict in this code is prepared using all of the data, Right?
+
+So, this will lead to data leakage
+
+
+
+2. Please go through the Naive Bayes formulation once: https://en.wikipedia.org/wiki/Naive_Bayes_classifier. In this there is a prior probability term which is being multiplied to the product of conditional probabilities. So, here what will happen is that the class with majority samples will have prior probability much larger than the minority class. Thus, it will give biased results in favor of majority class. Instead, we set class priors=[0.5,0.5] to ensure that our predictions are not dependent on the prior prob or majority/minority class, rather our predictions will depend only on the conditional probabilities. To sum up, we are leaving the decision making to the features we have rather than the class distribution.
+
+
+
+Thus, there is no need for upsampling the data when using class_priors.
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+
+
+CountVectorizer is giving different column count every time i run the code.Could you give some insights.Is this an error??
+
+A
+AppliedRoots
+2 yrs ago
+"CountVectorizer is giving different column count every time i run the code.Could you give some insights.Is this an error??"
+
+
+
+Can you please explain further. On which set you are fitting? and when do you get different shapes?
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+I am fitting on project title with count vectorizer and finding this change in columns
+(13400, 2422)
+(13400, 2422)
+(6600, 2422)
+(6600, 2422).
+Im not sure if this happens for 'essay' as well ,since we are setting it to max=5000.
+
+
+
+2422,2432,2442,2448....
+
+A
+AppliedRoots
+2 yrs ago
+Fitting on train essays and fitting on train titles will definitely result in different lenghts as the corpus and vocab is different. So, you can use different names for both the vectorizers like this:
+
+essay_vect = CountVectorizer(min_df = 5)
+
+essay_vect.fit(train_essays)
+
+
+
+title_vect = CountVectorizer(min_df = 5)
+
+title_vect.fit(train_titles)
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+I aggree with that,there will be different count of on essay and project title since the corpus is different.
+But i'm seeing the change on project title alone with both BOW and TFIDF vectorizer every time i run the code.
+
+I'm observing this when the sample size is less than <40k.Anthing more than that will give us a corpus >5K.
+
+Logo
+Applied Roots
+2 yrs ago
+Could you please share us your contact number, we will call you and will discuss this with you
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+My number is 9449610664
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+Any time is convinient
+
+Assignment 5
+
+
+AppliedRoots
+2 yrs ago
+Please improve your model score for optimal model. During hyper param your scores are in the range of 0.9 but for optimal model they are very baseline, close to 0.5
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+1)Tried selecting best features still 50% AUC on test.
+
+2)Tried my data points but still 50% AUC on test.
+
+3)My data is normalized still 50% AUC on test.
+
+4)Used advanced optimization solvers with Logistic regression like 'lbfgs' still 50% AUC on test.
+
+5)Used SGD classifiers still 50% AUC on test.
+
+6)Used 10 fold CV and found the Hyper paras still 50% AUC on test.
+
+7)Imbalance of the data is also over come by class_weight="balanced" still 50 % AUC on test.
+
+8)Used penalty=l1 still 50% AUC on test.
+
+9)I am assuming the features to be not linearly separable.Hence the 50% AUC on test.
+
+Kindly confirm.
+
+I was getting 90% on train because it was run on small observations hence resulting in overfitting.
+
+I request you to guide.
+
+Thank you
+
+A
+AppliedRoots
+2 yrs ago
+Can you please drop us a mail at team@appliedaicourse.com
+
+A
+AppliedRoots
+2 yrs ago
+Please improve your model score for optimal model. During hyper param your scores are in the range of 0.9 but for optimal model they are very baseline, close to 0.5
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+1)Tried selecting best features still 50% AUC on test.
+
+2)Tried my data points but still 50% AUC on test.
+
+3)My data is normalized still 50% AUC on test.
+
+4)Used advanced optimization solvers with Logistic regression like 'lbfgs' still 50% AUC on test.
+
+5)Used SGD classifiers still 50% AUC on test.
+
+6)Used 10 fold CV and found the Hyper paras still 50% AUC on test.
+
+7)Imbalance of the data is also over come by class_weight="balanced" still 50 % AUC on test.
+
+8)Used penalty=l1 still 50% AUC on test.
+
+9)I am assuming the features to be not linearly separable.Hence the 50% AUC on test.
+
+Kindly confirm.
+
+I was getting 90% on train because it was run on small observations hence resulting in overfitting.
+
+I request you to guide.
+
+Thank you
+
+A
+AppliedRoots
+2 yrs ago
+Can you please drop us a mail at team@appliedaicourse.com
+
+Comments Section is Disabled
+
+
+Assignment 6
+
+1. Could you please standardize the data after splitting, apply fit_transform function for train data and transform function for test data.
+
+2. As your final comparison, print MSE of both your_SGD and sklearn_SGD. they both should be around 23 or even less.
+
+Thank you.
+
+Assignment 7
+
+Logo
+Applied Roots
+2 yrs ago
+1. In the case of tfidf_w2v, you need to create a TF-IDF vectorizer using train data then use the same vectorizer for cv and test data sets, which means you can create a dictionary using train data. Please check at cell number 81.
+
+2. By looking at confusion matrices for all your models, they are predicting only positive classes, so could you please re-check your code.
+
+
+
+Please update and resubmit your assignment accordingly.
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+1.Done
+
+2.Sir I have tried almost tried all probabilities but the classifier is only classifying majrity of 1's.I'm sure the code is right since there is only a difference in classifier when compared to my previous code.Another reason can be poor learning of the classifier due to minority 0's.
+
+Kindly give me a clue or guide where i am going wrong.
+
+Thank you
+
+Logo
+Applied Roots
+2 yrs ago
+Could you please share updated files, we will look into it.
+
+
+
+Thank you.
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+Should i mail or resubmit the files??
+
+Logo
+Applied Roots
+2 yrs ago
+You can submit your files in the classroom.appliedcourse.com.
+
+
+
+Thank you.
+
+Logo
+Applied Roots
+2 yrs ago
+Nice work.
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+Thanks for all the help and support.
+
+Happy New Year 2020
+
+Logo
+Applied Roots
+2 yrs ago
+1. In the case of tfidf_w2v, you need to create a TF-IDF vectorizer using train data then use the same vectorizer for cv and test data sets, which means you can create a dictionary using train data. Please check at cell number 81.
+
+2. By looking at confusion matrices for all your models, they are predicting only positive classes, so could you please re-check your code.
+
+
+
+Please update and resubmit your assignment accordingly.
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+1.Done
+
+2.Sir I have tried almost tried all probabilities but the classifier is only classifying majrity of 1's.I'm sure the code is right since there is only a difference in classifier when compared to my previous code.Another reason can be poor learning of the classifier due to minority 0's.
+
+Kindly give me a clue or guide where i am going wrong.
+
+Thank you
+
+Logo
+Applied Roots
+2 yrs ago
+Could you please share updated files, we will look into it.
+
+
+
+Thank you.
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+Should i mail or resubmit the files??
+
+Logo
+Applied Roots
+2 yrs ago
+You can submit your files in the classroom.appliedcourse.com.
+
+
+
+Thank you.
+
+Logo
+Applied Roots
+2 yrs ago
+Nice work.
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+Thanks for all the help and support.
+
+Happy New Year 2020
+
+Assignment 8
+
+stratify = 'y' parameter was already used in the previously submitted code.
+
+#Comments are added for response table creation code.
+
+Thank you
+
+Assignment 9
+
+
+Applied Roots
+2 yrs ago
+Your submission has been evaluated, Ganeshraj. We apologize for the delay.
+
+Most of the instructions have been followed correctly, but we have a few suggestions for you.
+
+
+
+1) For clustering tasks, you need not split the dataset into train and test. You can use the whle dataset directly. Also there is no need of class labels and balancing the dataset, as Clustering is an unsupervised learning task.
+
+
+
+2) In DBSCAN, the optimal value of 'min_samples' = (2*number of dimensions in the given data). Here as you have reduced the dimensionality to 5000, the ideal value of 'min_samples' = 2*5000 = 10000
+
+Make sure the number of points of data you use to fit a DBSCAN model should be greater than 'min_samples' value.
+
+
+
+Incorporate the above mentioned changes and make a resubmission.
+
+Logo
+Applied Roots
+2 yrs ago
+Looks like the 2nd suggestion has not been implemented. Can you let us know the reason?
+
+Logo
+Applied Roots
+2 yrs ago
+We accept this submission.
+
+GS
+Ganeshraj Shetty
+2 yrs ago
+Thank you Team for the corrections and guidance.
+
+Assignment 10
+
+comparison table is missing in conclusion section please include it and resubmit.
+
+please represent your results of a model in tabular format in conclusion section
+
+Assignment 11
+
+Nice work and your submission is accepted. We suggest you to use a pretty tble at the end to compre all the models 
+in terms of the hyper-parameter values and the performance metrics whenever you build multiple models.
+
+Assignment 12.
+
+Have error plots for train and cv data sets in the same plot for all models. So that you will get a clear idea of when a model is overfitting or underfitting.
+
+Please update and resubmit your assignment accordingly.
+
+Assignment 13.
+
+Good work!
+
+Please try to get test_accuracy>94%,to get that accuracy you can try using various lstm architectures with 
+different drop out rates,or you can also try using divide and conquer cnn
+
+The accuracy of the model at the last epoch is considered as final accuracy,since you are getting best model at 9th epoch you
+try using model checkpointing which helps you to save the best model of all epochs
+
